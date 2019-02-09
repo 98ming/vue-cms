@@ -50,6 +50,34 @@ var store = new Vuex.Store({
 
             // 当更新 car 之后，把 car 数组，存储到本地的 localStorage 中
             localStorage.setItem('car',JSON.stringify(state.car))
+        },
+        updateGoodsInfo(state,goodsinfo){
+            // 修改购物车中商品的数量值
+            state.car.some(item=>{
+                if(item.id == goodsinfo.id){
+                    item.count = parseInt(goodsinfo.count)
+                    return true
+                }
+            })
+            // 当更新 car 之后，把 car 数组，存储到本地的 localStorage 中
+            localStorage.setItem('car',JSON.stringify(state.car))
+        },
+        remove(state,id){
+            // 删除购物车中的商品
+            state.car.some((item,i)=>{
+                if(item.id == id){
+                    state.car.shift(i,1)
+                }
+            })
+        },
+        updateGoodsSelected(state,goodsinfo){
+            state.car.some(item=>{
+                if(item.id == goodsinfo.id){
+                    item.selected = goodsinfo.selected
+                }
+            })
+            // 当更新 car 之后，把 car 数组，存储到本地的 localStorage 中
+            localStorage.setItem('car',JSON.stringify(state.car))
         }
         // 注意：如果组件想要调用 mutations 中的方法，只能使用 this.$store.commit('方法名')
         // 注意：mutations 的函数参数列表中，最多支持两个参数，其中，参数1：是 state 状态；参数2：通
@@ -63,6 +91,33 @@ var store = new Vuex.Store({
                 c += item.count
             })
             return c
+        },
+        getGoodsCount(state){
+            var o = {}
+            state.car.forEach(item=>{
+                o[item.id] = item.count
+            })
+            return o
+        },
+        getGoodsSelect(state){
+            var o ={}
+            state.car.forEach(item=>{
+                o[item.id] = item.selected
+            })
+            return o
+        },
+        getGoodsCountAndAmount(state){
+            var o = {
+                count : 0,
+                amount : 0
+            }
+            state.car.forEach(item=>{
+                if(item.selected){
+                    o.count += item.count
+                    o.amount += item.count * 2199
+                }
+            })
+            return o
         }
         // 经过回顾对比，发现 getters 中的方法，和组件中的过滤器比较类似，因为，过滤器和 getters 都没有
         // 修改原数据，都是把原数据做了一层包装，提供给了调用者
@@ -100,12 +155,13 @@ import './lib/mui/dist/css/mui.css'
 import './lib/mui/dist/css/icons-extra.css'
 
 // 按需导入 Mint-UI 中的组件
-import { Header,Swipe, SwipeItem,Button,Lazyload } from 'mint-ui'
+import { Header,Swipe, SwipeItem,Button,Lazyload,Switch } from 'mint-ui'
 Vue.component(Header.name,Header)
 Vue.component(Swipe.name, Swipe);
 Vue.component(SwipeItem.name, SwipeItem);
 Vue.component(Button.name, Button);
 Vue.use(Lazyload);
+Vue.component(Switch.name, Switch);
 
 // 导入自己的 router.js 模块
 import router from './router.js'
